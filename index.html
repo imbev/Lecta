@@ -89,7 +89,12 @@
                 <center><h3>Unable to load post</h3></center>
                 <form method="get">
                     <label for="event">Choose Nostr event (hex):</label>
-                    <textarea id="event" name="event" required></textarea>
+                    <textarea
+                        id="event"
+                        name="event"
+                        placeholder="abcde..."
+                        required
+                    ></textarea>
                     <label for="relays">Choose Nostr relays (csv):</label>
                     <textarea
                         id="relays"
