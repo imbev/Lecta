@@ -55,6 +55,10 @@
                     }
                 }
             }
+            #author {
+                display: flex;
+                flex-direction: column;
+            }
             @view-transition {
                 navigation: auto;
             }
@@ -73,6 +77,11 @@
                 </hgroup>
                 <img id="image" />
                 <br />
+
+                <div id="author">
+                    <b id="authorName"></b>
+                    <span id="authorAbout"></span>
+                </div>
                 <hr />
                 <section id="content"></section>
                 <hr />
@@ -127,6 +136,22 @@
             }
 
             if (event != undefined) {
+                const post_author = await pool.get(relays, {
+                    kinds: [0],
+                    authors: [event.pubkey],
+                    limit: 1,
+                });
+                if (post_author) {
+                    const post_author_ = JSON.parse(post_author.content);
+                    console.log(post_author_);
+                    document.querySelector("#authorName").innerHTML =
+                        "By: " +
+                        (post_author_.display_name
+                            ? post_author_.display_name
+                            : post_author_.name);
+                    document.querySelector("#authorAbout").innerHTML =
+                        post_author_.about ? post_author_.about : "";
+                }
                 const post_title = event.tags.filter(
                     (tag) => tag[0] == "title",
                 )[0][1];
