@@ -29,6 +29,32 @@
                 display: flex;
                 justify-content: space-between;
             }
+            #form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                form {
+                    display: grid;
+                    grid-template-columns: auto auto;
+                    gap: 0.25in;
+                    max-width: 6in;
+                    button {
+                        grid-column-start: 2;
+                        background-color: lightgrey;
+                        color: black;
+                        padding: 0.05in;
+                        border-radius: 7.5px;
+                        cursor: pointer;
+                    }
+                    textarea {
+                        border-width: 2px;
+                        border-radius: 7.5px;
+                        min-height: 0.75in;
+                        min-width: 2.5in;
+                        padding: 0.125in;
+                    }
+                }
+            }
             @view-transition {
                 navigation: auto;
             }
@@ -58,6 +84,21 @@
                     <a id="share">Share this post with others</a>
                 </footer>
             </article>
+            <section id="form" style="display: none">
+                <center><h3>Unable to load post</h3></center>
+                <form method="get">
+                    <label for="event">Choose Nostr event (hex):</label>
+                    <textarea id="event" name="event" required></textarea>
+                    <label for="relays">Choose Nostr relays (csv):</label>
+                    <textarea
+                        id="relays"
+                        name="relays"
+                        placeholder="wss://relay.nostr.band,&#13;&#10;wss://nos.lol/"
+                        required
+                    ></textarea>
+                    <button type="submit">Query</button>
+                </form>
+            </section>
         </main>
         <script type="module">
             import { SimplePool } from "https://esm.sh/nostr-tools@2.23.0/es2022/nostr-tools.bundle.mjs?exports=SimplePool";
@@ -65,35 +106,50 @@
 
             const pool = new SimplePool();
             const urlParams = new URLSearchParams(window.location.search);
-            const relays = urlParams.get("relays").split(",");
+            const relays = urlParams.get("relays")
+                ? urlParams.get("relays").split(",")
+                : undefined;
             const eventId = urlParams.get("event");
 
-            const event = await pool.get(relays, {
-                ids: [eventId],
-            });
-            const post_title = event.tags.filter(
-                (tag) => tag[0] == "title",
-            )[0][1];
-            const post_summary = event.tags.filter(
-                (tag) => tag[0] == "summary",
-            )[0][1];
-            const post_image = event.tags.filter(
-                (tag) => tag[0] == "image",
-            )[0][1];
-            const post_content = marked.parse(event.content);
+            var event = undefined;
 
-            console.log(event);
+            if (relays != undefined) {
+                event = await pool.get(relays, {
+                    ids: [eventId],
+                });
+                console.log(event);
+            }
 
-            document.title = post_title;
-            document.querySelector("#title").innerHTML = post_title;
-            document.querySelector("#summary").innerHTML = post_summary;
-            document.querySelector("#image").src = post_image;
-            document.querySelector("#content").innerHTML = post_content;
+            if (event != undefined) {
+                const post_title = event.tags.filter(
+                    (tag) => tag[0] == "title",
+                )[0][1];
+                const post_summary = event.tags.filter(
+                    (tag) => tag[0] == "summary",
+                )[0][1];
+                const post_image = event.tags.filter(
+                    (tag) => tag[0] == "image",
+                )[0][1];
+                const post_content = marked.parse(event.content);
 
-            document.querySelector("#share").href = window.location.href;
+                document.title = post_title;
+                document.querySelector("#title").innerHTML = post_title;
+                document.querySelector("#summary").innerHTML = post_summary;
+                document.querySelector("#image").src = post_image;
+                document.querySelector("#content").innerHTML = post_content;
 
-            document.querySelector("#loading").style.display = "none";
-            document.querySelector("#post").style.display = "block";
+                document.querySelector("#share").href = window.location.href;
+
+                document.querySelector("#loading").style.display = "none";
+                document.querySelector("#post").style.display = "block";
+            } else {
+                console.log(event);
+                document.querySelector("#event").value = urlParams.get("event");
+                document.querySelector("#relays").value =
+                    urlParams.get("relays");
+                document.querySelector("#loading").style.display = "none";
+                document.querySelector("#form").style.display = "flex";
+            }
         </script>
     </body>
 </html>
