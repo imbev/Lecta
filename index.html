@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://esm.sh" crossorigin />
+        <meta name="color-scheme" content="light dark" />
+        <link
+            rel="modulepreload"
+            href="https://esm.sh/nostr-tools@2.23.0/es2022/nostr-tools.bundle.mjs?exports=SimplePool"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.conditional.sand.min.css"
+        />
+        <style>
+            body {
+                padding-top: 0.5in;
+                padding-bottom: 1in;
+            }
+            .container {
+                max-width: 9in;
+            }
+            img,
+            svg {
+                max-width: 100%;
+            }
+            footer {
+                display: flex;
+                justify-content: space-between;
+            }
+            @view-transition {
+                navigation: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <main class="container">
+            <div id="loading">
+                <br />
+                <center>Loading...</center>
+            </div>
+            <article id="post" style="display: none">
+                <hgroup>
+                    <h1 id="title"></h1>
+                    <p id="summary"></p>
+                </hgroup>
+                <img id="image" />
+                <br />
+                <hr />
+                <section id="content"></section>
+                <hr />
+                <br />
+                <footer>
+                    <span
+                        >Powered by <a href="https://nostr.com/">Nostr</a></span
+                    >
+                    <a id="share">Share this post with others</a>
+                </footer>
+            </article>
+        </main>
+        <script type="module">
+            import { SimplePool } from "https://esm.sh/nostr-tools@2.23.0/es2022/nostr-tools.bundle.mjs?exports=SimplePool";
+            import { marked } from "https://esm.sh/marked@17.0.1/es2022/marked.bundle.mjs?exports=marked";
+
+            const pool = new SimplePool();
+            const urlParams = new URLSearchParams(window.location.search);
+            const relays = urlParams.get("relays").split(",");
+            const eventId = urlParams.get("event");
+
+            const event = await pool.get(relays, {
+                ids: [eventId],
+            });
+            const post_title = event.tags.filter(
+                (tag) => tag[0] == "title",
+            )[0][1];
+            const post_summary = event.tags.filter(
+                (tag) => tag[0] == "summary",
+            )[0][1];
+            const post_image = event.tags.filter(
+                (tag) => tag[0] == "image",
+            )[0][1];
+            const post_content = marked.parse(event.content);
+
+            console.log(event);
+
+            document.title = post_title;
+            document.querySelector("#title").innerHTML = post_title;
+            document.querySelector("#summary").innerHTML = post_summary;
+            document.querySelector("#image").src = post_image;
+            document.querySelector("#content").innerHTML = post_content;
+
+            document.querySelector("#share").href = window.location.href;
+
+            document.querySelector("#loading").style.display = "none";
+            document.querySelector("#post").style.display = "block";
+        </script>
+    </body>
+</html>
