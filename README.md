@@ -1,6 +1,6 @@
 ## Lecta
 
-Lecta is a long-form web client for the [Nostr](https://nostr.com/) protocol. Unlike most Nostr clients, Lecta aims to make the Nostr part invisible, presenting an technical experience indistinguishable from the traditional web.
+Lecta is a long-form web client for the [Nostr](https://nostr.com/) protocol. Unlike most Nostr clients, Lecta aims to make Nostr invisible to the user, presenting an technical experience indistinguishable from the traditional web.
 
 ### Goals
 
@@ -12,7 +12,7 @@ The technical requirements for Lecta include:
 
 Lecta is currently available as a single HTML file with references to external scripts. This may be served by any typical web server. In the future, a build step might be added.
 
-To serve a [NIP-23](https://nips.nostr.com/23)(long-form content) event using Lecta, simply add the correct query parameters to the base url. If your HTML page is served at `https://imbev.github.io/Lecta/`, your content might be available at `https://imbev.github.io/Lecta/?event=cc8fad119d20b6018fceb4def0cee1efa0d11f0f3a298a4f7f268191c23d39f4&relays=wss://relay.damus.io,wss://relay.nostr.band,wss://nos.lol/`.
+To serve a [NIP-23](https://nips.nostr.com/23)(long-form content) event using Lecta, simply add the correct query parameters to the base url. If your HTML page is served at [https://imbev.github.io/Lecta/](https://imbev.github.io/Lecta/), your content might be available at [https://imbev.github.io/Lecta/?event=cc8fad119d20b6018fceb4def0cee1efa0d11f0f3a298a4f7f268191c23d39f4&relays=wss://relay.damus.io,wss://relay.nostr.band,wss://nos.lol/](https://imbev.github.io/Lecta/?event=cc8fad119d20b6018fceb4def0cee1efa0d11f0f3a298a4f7f268191c23d39f4&relays=wss://relay.damus.io,wss://relay.nostr.band,wss://nos.lol/).
 
 ### License
 
