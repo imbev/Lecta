@@ -78,6 +78,17 @@
                     rotate: 360deg;
                 }
             }
+            #overlay {
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(255, 0, 0, 0.25);
+                top: 0;
+                left: 0;
+                z-index: 2;
+                justify-content: center;
+                align-items: center;
+            }
             @view-transition {
                 navigation: auto;
             }
@@ -145,6 +156,7 @@
                     <button type="submit">Query</button>
                 </form>
             </section>
+            <div id="overlay" style="display: none"></div>
         </main>
         <script type="module">
             import { SimplePool } from "https://esm.sh/nostr-tools@2.23.0/es2022/nostr-tools.bundle.mjs?exports=SimplePool";
@@ -211,6 +223,32 @@
                     urlParams.get("relays");
                 document.querySelector("#loading").style.display = "none";
                 document.querySelector("#form").style.display = "flex";
+            }
+            var config;
+            try {
+                var config = await (await fetch("config.json")).json();
+            } catch (e) {
+                console.log("Unable to load config: " + e);
+            }
+
+            if (config) {
+                console.log(config);
+                if (config.authorPubkeyWhitelist && event) {
+                    var blocked = true;
+                    config.authorPubkeyWhitelist.forEach((pubkey) => {
+                        if (pubkey === event.pubkey) {
+                            blocked = false;
+                        }
+                        if (blocked) {
+                            document.querySelector("#overlay").innerHTML =
+                                "<h1 style='background-color: black; color: white;'>Post author not in whitelist</h1>";
+                            document.querySelector("#overlay").style.display =
+                                "flex";
+                            document.querySelector("body").style.overflow =
+                                "hidden";
+                        }
+                    });
+                }
             }
         </script>
     </body>
